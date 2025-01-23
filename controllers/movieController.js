@@ -1,19 +1,12 @@
 const dbConnection = require("../data/dbConnection");
 
 //INDEX
-const index = (req, res) => {
+const index = (req, res, next) => {
     const sql = "SELECT * FROM `movies`;";
 
     dbConnection.query(sql, (err, movies) => {
         if (err) {
-            const resObj = {
-                status: "fail",
-                message: "Errore interno del server"
-            };
-            if (process.env.ENVIRONMENT === "development") {
-                resObj.details = err.stack;
-            }
-            return res.status(500).json(resObj);
+            return next(new Error(err.message));
         }
 
         return res.status(200).json({
@@ -39,14 +32,7 @@ const show = (req, res) => {
 
     dbConnection.query(sql, [id], (err, movies) => {
         if (err) {
-            const resObj = {
-                status: "fail",
-                message: "Errore interno del server"
-            };
-            if (process.env.ENVIRONMENT === "development") {
-                resObj.details = err.stack;
-            }
-            return res.status(500).json(resObj);
+            return next(new Error(err.message));
         }
 
         if (movies.length === 0) {
@@ -58,14 +44,7 @@ const show = (req, res) => {
 
         dbConnection.query(sqlReview, [id], (err, reviews) => {
             if (err) {
-                const resObj = {
-                    status: "fail",
-                    message: "Errore interno del server"
-                };
-                if (process.env.ENVIRONMENT === "development") {
-                    resObj.details = err.stack;
-                }
-                return res.status(500).json(resObj);
+                return next(new Error(err.message));
             }
 
             const moviesDetails = {
