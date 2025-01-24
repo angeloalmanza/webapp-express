@@ -17,7 +17,7 @@ const index = (req, res, next) => {
 }
 
 //SHOW
-const show = (req, res) => {
+const show = (req, res, next) => {
     const id = req.params.id
 
     const sql = "SELECT * FROM movies WHERE id = ?;"
