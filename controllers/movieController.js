@@ -2,9 +2,19 @@ const dbConnection = require("../data/dbConnection");
 
 //INDEX
 const index = (req, res, next) => {
-    const sql = "SELECT * FROM `movies`;";
+    const filters = req.query;
 
-    dbConnection.query(sql, (err, movies) => {
+    let sql = "SELECT * FROM `movies`";
+    const params = [];
+
+    if (filters.search) {
+        sql += `
+        WHERE title LIKE ?;
+        `;
+        params.push(`%${filters.search}%`);
+    }
+
+    dbConnection.query(sql, params, (err, movies) => {
         if (err) {
             return next(new Error(err.message));
         }
