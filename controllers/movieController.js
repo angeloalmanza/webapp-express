@@ -7,11 +7,26 @@ const index = (req, res, next) => {
     let sql = "SELECT * FROM `movies`";
     const params = [];
 
+    // Costruzione dinamica della clausola WHERE
+    const conditions = [];
+
     if (filters.search) {
-        sql += `
-        WHERE title LIKE ?;
-        `;
+        conditions.push("title LIKE ?");
         params.push(`%${filters.search}%`);
+    }
+
+    if (filters.genre) {
+        conditions.push("genre = ?");
+        params.push(filters.genre);
+    }
+
+    if (filters.release_year) {
+        conditions.push("release_year = ?");
+        params.push(filters.release_year);
+    }
+
+    if (conditions.length > 0) {
+        sql += " WHERE " + conditions.join(" AND ");
     }
 
     dbConnection.query(sql, params, (err, movies) => {
