@@ -43,19 +43,19 @@ const index = (req, res, next) => {
 
 //SHOW
 const show = (req, res, next) => {
-    const id = req.params.id
+    const slug = req.params.slug;
 
-    const sql = "SELECT * FROM movies WHERE id = ?;"
+    const sql = "SELECT * FROM movies WHERE slug = ?;"
 
     const sqlReview = `
     SELECT reviews.* 
     FROM reviews
     JOIN movies
     ON movies.id = reviews.movie_id
-    WHERE movies.id = ?;
+    WHERE movies.slug = ?;
     `;
 
-    dbConnection.query(sql, [id], (err, movies) => {
+    dbConnection.query(sql, [slug], (err, movies) => {
         if (err) {
             return next(new Error(err.message));
         }
@@ -67,7 +67,7 @@ const show = (req, res, next) => {
             })
         }
 
-        dbConnection.query(sqlReview, [id], (err, reviews) => {
+        dbConnection.query(sqlReview, [slug], (err, reviews) => {
             if (err) {
                 return next(new Error(err.message));
             }
