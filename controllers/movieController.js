@@ -90,6 +90,28 @@ const storeReview = (req, res, next) => {
     const movieId = req.params.id;
     const {name, vote, text} = req.body;
 
+    // VALIDATION
+    if(isNaN(vote) || vote < 0 || vote > 5) {
+        return res.status(400).json({
+            status: "fail",
+            message: "Il voto deve essere un numero compreso tra 0 e 5"
+        })
+    }
+
+    if(name.length < 4){
+        return res.status(400).json({
+            status: "fail",
+            message: "Il nome deve contenere almeno 4 caratteri"
+        })
+    }
+
+    if(text && text.length > 0 && text.length < 6){
+        return res.status(400).json({
+            status: "fail",
+            message: "Il testo deve contenere almeno 6 caratteri"
+        })
+    }
+
     const movieSql = `
     SELECT *
     FROM movies
