@@ -9,4 +9,7 @@ router.get("/", movieController.index);
 //SHOW
 router.get("/:slug", movieController.show);
 
+// SALVATAGGIO NUOVA RECENSIONE
+router.post("/:id/reviews", movieController.storeReview);
+
 module.exports = router;

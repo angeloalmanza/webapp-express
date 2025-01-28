@@ -15,6 +15,9 @@ app.use(cors({
 //Middleware per la cartella public
 app.use(express.static('public'));
 
+// Middleware che fa il parse di json
+app.use(express.json());
+
 //Gruppi delle rotte
 app.use("/movies", moviesRouter);
 

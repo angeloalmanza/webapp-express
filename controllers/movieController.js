@@ -85,7 +85,49 @@ const show = (req, res, next) => {
     })
 }
 
+//SALVATAGGIO NUOVA RECENSIONE
+const storeReview = (req, res, next) => {
+    const movieId = req.params.id;
+    const {name, vote, text} = req.body;
+
+    const movieSql = `
+    SELECT *
+    FROM movies
+    WHERE id = ?
+    `;
+
+    dbConnection.query(movieSql, [movieId], (err, results) => {
+        if (err) {
+            return next(new Error(err.message));
+        }
+
+        if(results.length === 0) {
+            return res.status(404).json({
+                status: "Fail",
+                message: "Film non trovato"
+            })
+        }
+    });
+
+    const sql = `
+    INSERT INTO reviews(movie_id, name, vote, text)
+    VALUES (?, ?, ?, ?);
+    `;
+
+    dbConnection.query(sql, [movieId, name, vote, text], (err, results) => {
+        if (err) {
+            return next(new Error(err.message));
+        }
+
+        res.status(201).json({
+            status: "Success",
+            message: "Recensione inserita con successo"
+        })
+    })
+}
+
 module.exports = {
     index,
-    show
+    show,
+    storeReview
 }
