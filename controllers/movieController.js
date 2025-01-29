@@ -152,18 +152,18 @@ const storeReview = (req, res, next) => {
 // CREAZIONE NUOVO FILM
 const store = (req, res, next) => {
     const imageName = req.file.filename;
-    const { title, director, genre, release_year } = req.body;
+    const { title, director, genre, release_year, abstract } = req.body;
     const slug = slugify(title, {
         lower: true,
         strict: true,
     });
 
     const sql = `
-    INSERT INTO movies(slug, title, director, genre, release_year, image)
-    VALUES(?, ?, ?, ?, ?, ?)
+    INSERT INTO movies(slug, title, director, genre, release_year, abstract, image)
+    VALUES(?, ?, ?, ?, ?, ?, ?)
     `;
 
-    dbConnection.query(sql, [slug, title, director, genre, release_year, imageName], (err, results) => {
+    dbConnection.query(sql, [slug, title, director, genre, release_year, abstract, imageName], (err, results) => {
         if (err) {
             return next(new Error(err.message));
         }
