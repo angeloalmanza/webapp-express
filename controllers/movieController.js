@@ -1,3 +1,4 @@
+const slugify = require("slugify");
 const dbConnection = require("../data/dbConnection");
 
 //INDEX
@@ -88,24 +89,24 @@ const show = (req, res, next) => {
 //SALVATAGGIO NUOVA RECENSIONE
 const storeReview = (req, res, next) => {
     const movieId = req.params.id;
-    const {name, vote, text} = req.body;
+    const { name, vote, text } = req.body;
 
     // VALIDATION
-    if(isNaN(vote) || vote < 0 || vote > 5) {
+    if (isNaN(vote) || vote < 0 || vote > 5) {
         return res.status(400).json({
             status: "fail",
             message: "Il voto deve essere un numero compreso tra 0 e 5"
         })
     }
 
-    if(name.length < 4){
+    if (name.length < 4) {
         return res.status(400).json({
             status: "fail",
             message: "Il nome deve contenere almeno 4 caratteri"
         })
     }
 
-    if(text && text.length > 0 && text.length < 6){
+    if (text && text.length > 0 && text.length < 6) {
         return res.status(400).json({
             status: "fail",
             message: "Il testo deve contenere almeno 6 caratteri"
@@ -123,7 +124,7 @@ const storeReview = (req, res, next) => {
             return next(new Error(err.message));
         }
 
-        if(results.length === 0) {
+        if (results.length === 0) {
             return res.status(404).json({
                 status: "Fail",
                 message: "Film non trovato"
@@ -148,8 +149,35 @@ const storeReview = (req, res, next) => {
     })
 }
 
+// CREAZIONE NUOVO FILM
+const store = (req, res, next) => {
+    const imageName = req.file.filename;
+    const { title, director, genre, release_year } = req.body;
+    const slug = slugify(title, {
+        lower: true,
+        strict: true,
+    });
+
+    const sql = `
+    INSERT INTO movies(slug, title, director, genre, release_year, image)
+    VALUES(?, ?, ?, ?, ?, ?)
+    `;
+
+    dbConnection.query(sql, [slug, title, director, genre, release_year, imageName], (err, results) => {
+        if (err) {
+            return next(new Error(err.message));
+        }
+
+        return res.status(201).json({
+            status: "success",
+            message: "Il film è stato salvato",
+        });
+    })
+}
+
 module.exports = {
     index,
     show,
-    storeReview
+    storeReview,
+    store
 }
